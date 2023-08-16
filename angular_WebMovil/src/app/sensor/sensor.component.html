@@ -1,0 +1,8 @@
+<div>
+    <h1>Hola</h1><br><br>
+    <p>Datos del sensor: </p> <h2>.</h2> <br><br>
+    <button *ngIf="!activado, else desactivar" (click)="activarSensor()">Activar sensor</button>
+    <ng-template #desactivar>
+        <button (click)="desactivarSensor()" >Desactivar sensor</button>
+    </ng-template>
+</div>
