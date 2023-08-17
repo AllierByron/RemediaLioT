@@ -1,10 +1,11 @@
 const amongoose = require("mongoose");
 
 const medicionSchema = new amongoose.Schema({
-    noRegistro: Number,
-    temperatura: String,
-    humedad: String
-    
-});
+    datos_sensor: [{
+        noRegistro: Number,
+        temperatura: String,
+        humedad: String
+    }]
+}, {timestamps: true});
 
 amongoose.model("medicion", medicionSchema);

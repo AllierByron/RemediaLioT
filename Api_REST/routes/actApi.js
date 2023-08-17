@@ -124,17 +124,55 @@ router.patch('/', async(req, res)=>{
 async function registrarMedicion(data){
     
     let cant = await medicion.findOne({}).sort({_id:-1}).limit(1);
-    if(!cant) cant={noRegistro: 0};
+    console.log(cant);
+    if(!cant) {
+        cant={noRegistro: 0};
+    }else{
+        let elArray = await medicion.aggregate([{
+            $project:
+            { item: 1, ultimo: { $size: "$datos_sensor" } }
+        }]);
+        if(elArray) cant.noRegistro = elArray[0].ultimo;
+    }
+    console.log("Cant:");
+    console.log(cant);
 
-    let medi = await new medicion({
-        noRegistro: parseInt(cant.noRegistro)+1,
-        temperatura: data.temperatura+"C°",
-        humedad: data.humedad+"%"                
-    });
+    // console.log("Ultimo indice en el array: " + num);
+        console.log("Numero de reg: " + cant.noRegistro);
 
-    await medi.save();
+    if (cant.noRegistro>=100) cant.noRegistro = 0;
+        console.log("Numero de reg: " + cant.noRegistro);
 
-    return {medi};    
+    if(cant.noRegistro==0){
+        console.log("nuevo");
+        let medi = await new medicion({
+            datos_sensor: [{
+                noRegistro: parseInt(cant.noRegistro)+1,
+                temperatura: data.temperatura+"C°",
+                humedad: data.humedad+"%"
+            }]
+        });
+        await medi.save();
+        // console.log(medi);
+        return {medi};
+    }
+
+        console.log("updating");
+        let medi = await medicion.findOneAndUpdate(
+            { _id: cant._id },
+            {
+                $push: {
+                    datos_sensor: {
+                        noRegistro: (cant.noRegistro)+1,
+                        temperatura: data.temperatura+"C°",
+                        humedad: data.humedad+"%"
+                    }
+                }
+            },
+            { new: true }
+        );
+
+    return {medi};
 }
 
 module.exports = router;

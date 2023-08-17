@@ -2,15 +2,13 @@
  * Connect the SD card to the following pins:
  *
  * SD Card | ESP32
- *    D2       -
- *    D3       SS
- *    CMD      MOSI
- *    VSS      GND
- *    VDD      3.3V
- *    CLK      SCK
- *    VSS      GND
- *    D0       MISO
- *    D1       -
+ *----------------------------
+ *    CS   |   pin_GPIO5
+ *    MOSI |   pin_GPIO23
+ *    GND  |   GND
+ *    VCC  |   3.3V
+ *    SCK  |   CLK (GPIO18)
+ *    MISO |   pin_GPIO19
  */
 #include "FS.h"
 #include "SD.h"
@@ -34,10 +32,10 @@ HTTPClient http;
 //pongan su IP AQUI       |
 //                        |
 //                        v
-#define sensorAPI "http://192.168.100.9:3000/sensor"
+#define sensorAPI "http://192.168.100.23:3000/sensor"
 
-const char* ssid = "Totalplay-E3A8";
-const char* password = "E3A8A63Ed3bg987G";
+const char* ssid = "Totalplay-63AA";
+const char* password = "63AAEE8F8j7kWtdd";
 
 // #define pin 2
 
@@ -289,7 +287,7 @@ void loop(){
       SendSensorData(h,t, String("true"));
       medi = String(no) + ", "+ String(h)+", "+String(t)+"  \r\n";
       appendFile(SD, "/mydir/datalog.csv", medi.c_str());
-      delay(1000);
+      delay(15000);
     }
     Serial.println(medi);
     //se convierte el archivo a .csv
